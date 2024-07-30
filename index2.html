@@ -3,27 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List of Places</title>
+    <title>Property Listings</title>
     <link rel="stylesheet" href="styles_index.css">
 </head>
 <body>
     <header>
-        <img src="images/logo.png" alt="Logo" class="logo">
-        <a href="login.html" id="login-link" class="login-button">Login</a>
+        <a href="index2.html">
+            <img src="images/logo.png" alt="Logo" class="logo">
+        </a>
+        <a href="login.html" class="login-button">Login</a>
     </header>
-    <nav>
-        <!-- Navigation links can be added here if needed -->
-    </nav>
     <main>
         <h1>Available Places</h1>
-        <label for="country-filter">Filter by country:</label>
-        <select id="country-filter">
-            <option value="all">All</option>
-            <!-- Add options for countries here -->
-        </select>
         <div class="places-container">
             <div class="place-card" data-id="1">
-                <h2>Beautiful Beach House</h2>
+                <h1>Beautiful Beach House</h1>
                 <p>Price per night: $150</p>
                 <p>Location: Los Angeles, United States</p>
                 <button class="details-button" onclick="showDetails(1)">View Details</button>
@@ -35,17 +29,17 @@
                 <button class="details-button" onclick="showDetails(2)">View Details</button>
             </div>
             <div class="place-card" data-id="3">
-                <h2>Modern Apartment</h2>
+                <h3>Modern Apartment</h3>
                 <p>Price per night: $200</p>
                 <p>Location: New York, United States</p>
                 <button class="details-button" onclick="showDetails(3)">View Details</button>
             </div>
-            <!-- Repeat for more places -->
         </div>
     </main>
     <footer>
         <p>© 2024 HBNB Evolution. All rights reserved.</p>
     </footer>
+
     <script>
         function showDetails(id) {
             window.location.href = 'place.html?id=' + id;
