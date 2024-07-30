@@ -1,0 +1,72 @@
+/* styles_place.css */
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+header, footer {
+    background: #333;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+}
+
+.logo {
+    max-width: 150px;
+}
+
+.login-button {
+    float: right;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px;
+    background: #007BFF;
+    border-radius: 5px;
+}
+
+main {
+    padding: 20px;
+}
+
+.place-details, .reviews, .add-review {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #f9f9f9;
+}
+
+.place-info p {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.place-info strong {
+    color: #333;
+}
+
+.review-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #fff;
+}
+
+.submit-review-button {
+    background: #28a745;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.submit-review-button:hover {
+    background: #218838;
+}
+
+footer p {
+    margin: 0;
+}
