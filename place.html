@@ -14,8 +14,7 @@
         <a href="login.html" class="login-button">Login</a>
     </header>
     <main id="place-details">
-        <!-- étant donné que j'ai chargé les données  dans le js grace au sigle id = "place-details  les informations pourons êtres chargé ici!-->
-
+        <!-- Les détails du lieu seront chargés ici par JavaScript -->
     </main>
     <footer>
         <p>© 2024 HBNB Evolution. All rights reserved.</p>
@@ -25,92 +24,128 @@
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             const placeId = params.get('id');
-            //ici je fais une liste de mes places avec les informations que je veux afficher , et les informations que
-            //je veux afficher sont spécifiées dans le if(placeId) grace à la méthode find et aussi l'id de la place
-
-            const places = [
-                {
-                    id: 1,
-                    title: "Beautiful Beach House",
-                    host: "John Doe",
-                    price: "$150",
-                    location: "Los Angeles, United States",
-                    description: "A beautiful beach house with amazing views of the ocean. Perfect for a relaxing vacation.",
-                    amenities: "WiFi, Pool, Air Conditioning"
-                },
-                {
-                    id: 2,
-                    title: "Modern Apartment",
-                    host: "Alex Johnson",
-                    price: "$200",
-                    location: "New York, United States",
-                    description: "A sleek and stylish apartment in the heart of the city. Close to all major attractions and amenities.",
-                    amenities: "Gym, Rooftop Terrace, High-Speed Internet"
-                },
-                {
-                    id: 3,
-                    title: "Cozy Cabin",
-                    host: "Jane Smith",
-                    price: "$100",
-                    location: "Toronto, Canada",
-                    description: "A charming cabin in the woods, ideal for a quiet getaway. Enjoy the tranquility and nature.",
-                    amenities: "Fireplace, Kitchen, Free Parking"
-                }
-            ];
 
             if (placeId) {
-                //Ici je fais une boucle pour parcourir les places et je spécifie les informations que je veux afficher
-                const place = places.find(p => p.id == placeId);
-                if (place) {
-                    //c'est ici que je spécifie les informations que je veux afficher
-                    document.getElementById('place-details').innerHTML = `
-                        <h1>${place.title}</h1>
-                        <section class="place-details">
-                            <div class="place-info">
-                                <p><strong>Host:</strong> ${place.host}</p>
-                                <p><strong>Price per night:</strong> ${place.price}</p>
-                                <p><strong>Location:</strong> ${place.location}</p>
-                                <p><strong>Description:</strong> ${place.description}</p>
-                                <p><strong>Amenities:</strong> ${place.amenities}</p>
+                // Appel à une API pour récupérer les détails du lieu avec l'ID donné
+                fetch(`http://127.0.0.1:5000/places/${placeId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${getCookie('token')}` // Assurez-vous que le token est valide
+                    }
+                })
+                .then(response => response.json())
+                .then(place => {
+                    if (place) {
+                        const reviewsHtml = place.reviews.length ? place.reviews.map(review => `
+                            <div class="review-card">
+                                <p><strong>${review.user_name}:</strong></p>
+                                <p>${review.comment}</p>
+                                <p><strong>Rating:</strong> ${getStars(review.rating)}</p>
                             </div>
-                            <section class="reviews">
-            <h2>Reviews</h2>
-            <div class="review-card">
-                <p><strong>Jane Smith:</strong></p>
-                <p>Great place to stay!</p>
-                <p><strong>Rating:</strong> ★★★★★</p>
-            </div>
-            <div class="review-card">
-                <p><strong>Robert Brown:</strong></p>
-                <p>Amazing location and very comfortable.</p>
-                <p><strong>Rating:</strong> ★★★★★</p>
-            </div>
-        </section>
+                        `).join('') : '<p>No reviews yet.</p>';
 
-        <!-- Assuming you want to show the review form only if the user is logged in -->
-        <section class="add-review">
-            <h2>Add a Review</h2>
-            <form action="submit_review.html" method="post">
-                <label for="review-text">Your Review:</label>
-                <textarea id="review-text" name="review-text" rows="4" required></textarea>
-                <label for="rating">Rating:</label>
-                <select id="rating" name="rating" required>
-                    <option value="1">1 Star</option>
-                    <option value="2">2 Stars</option>
-                    <option value="3">3 Stars</option>
-                    <option value="4">4 Stars</option>
-                    <option value="5">5 Stars</option>
-                </select>
-                <button type="submit" class="submit-review-button">Submit Review</button>
-            </form>
-        </section>
-                        </section>
-                    `;
-                } else {
-                    document.getElementById('place-details').innerHTML = 'Place not found.';
-                }
+                        document.getElementById('place-details').innerHTML = `
+                            <h1>${place.description}</h1>
+                            <section class="place-details">
+                                <div class="place-info">
+                                    <p><strong>Host:</strong> ${place.host_name}</p>
+                                    <p><strong>Price per night:</strong> $${place.price_per_night}</p>
+                                    <p><strong>Location:</strong> ${place.city_name}, ${place.country_name}</p>
+                                    <p><strong>Description:</strong> ${place.description}</p>
+                                    <p><strong>Amenities:</strong> ${place.amenities}</p>
+                                </div>
+                                <section class="reviews">
+                                    <h2>Reviews</h2>
+                                    ${reviewsHtml}
+                                </section>
+                                ${getCookie('token') ? `
+                                <section class="add-review">
+                                    <h2>Add a Review</h2>
+                                    <form id="review-form">
+                                        <label for="review-text">Your Review:</label>
+                                        <textarea id="review-text" name="review-text" rows="4" required></textarea>
+                                        <label for="rating">Rating:</label>
+                                        <select id="rating" name="rating" required>
+                                            <option value="1">1 Star</option>
+                                            <option value="2">2 Stars</option>
+                                            <option value="3">3 Stars</option>
+                                            <option value="4">4 Stars</option>
+                                            <option value="5">5 Stars</option>
+                                        </select>
+                                        <button type="submit" class="submit-review-button">Submit Review</button>
+                                    </form>
+                                </section>
+                                ` : ''}
+                            </section>
+                        `;
+
+                        // Ajouter la fonctionnalité pour envoyer une revue
+                        if (getCookie('token')) {
+                            document.getElementById('review-form').addEventListener('submit', (event) => {
+                                event.preventDefault();
+                                const reviewText = document.getElementById('review-text').value;
+                                const ratingValue = document.getElementById('rating').value;
+
+                                fetch(`http://127.0.0.1:5000/places/${placeId}/reviews`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': `Bearer ${getCookie('token')}`
+                                    },
+                                    body: JSON.stringify({ review: reviewText, rating: ratingValue })
+                                })
+                                .then(response => response.json())
+                                .then(newReview => {
+                                    // Ajouter la nouvelle revue directement dans le DOM
+                                    const newReviewHtml = `
+                                        <div class="review-card">
+                                            <p><strong>${newReview.user_name}:</strong></p>
+                                            <p>${newReview.comment}</p>
+                                            <p><strong>Rating:</strong> ${getStars(newReview.rating)}</p>
+                                        </div>
+                                    `;
+                                    const reviewsSection = document.querySelector('.reviews');
+                                    if (reviewsSection) {
+                                        reviewsSection.innerHTML = `
+                                            <h2>Reviews</h2>
+                                            ${newReviewHtml}
+                                            ${reviewsSection.innerHTML} <!-- Conserver les revues existantes -->
+                                        `;
+                                    }
+                                    document.getElementById('review-form').reset();
+                                })
+                                .catch(error => {
+                                    console.error('Error submitting review:', error);
+                                    alert('Failed to submit review');
+                                });
+                            });
+                        }
+                    } else {
+                        document.getElementById('place-details').innerHTML = 'Place not found.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching place details:', error);
+                    document.getElementById('place-details').innerHTML = 'An error occurred while fetching place details.';
+                });
             } else {
-                document.getElementById('place-details').innerHTML = 'Place not found.';
+                document.getElementById('place-details').innerHTML = 'No place ID provided.';
+            }
+
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+
+            function getStars(rating) {
+                const fullStar = '★';
+                const emptyStar = '☆';
+                let stars = '';
+                for (let i = 1; i <= 5; i++) {
+                    stars += i <= rating ? fullStar : emptyStar;
+                }
+                return stars;
             }
         });
     </script>
