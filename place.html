@@ -14,7 +14,7 @@
         <a href="login.html" class="login-button">Login</a>
     </header>
     <main id="place-details">
-        <!-- Les détails du lieu seront chargés ici par JavaScript -->
+        <!-- Place details will be loaded here by JavaScript -->
     </main>
     <footer>
         <p>© 2024 HBNB Evolution. All rights reserved.</p>
@@ -26,33 +26,35 @@
             const placeId = params.get('id');
 
             if (placeId) {
-                // Appel à une API pour récupérer les détails du lieu avec l'ID donné
+                // Fetch place details from API
                 fetch(`http://127.0.0.1:5000/places/${placeId}`, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${getCookie('token')}` // Assurez-vous que le token est valide
+                        'Authorization': `Bearer ${getCookie('token')}` // Ensure token is valid
                     }
                 })
                 .then(response => response.json())
                 .then(place => {
                     if (place) {
-                        const reviewsHtml = place.reviews.length ? place.reviews.map(review => `
-                            <div class="review-card">
-                                <p><strong>${review.user_name}:</strong></p>
-                                <p>${review.comment}</p>
-                                <p><strong>Rating:</strong> ${getStars(review.rating)}</p>
-                            </div>
-                        `).join('') : '<p>No reviews yet.</p>';
+                        const reviewsHtml = (place.reviews && place.reviews.length)
+                            ? place.reviews.map(review => `
+                                <div class="review-card">
+                                    <p><strong>${review.user_name || 'Anonymous'}:</strong></p>
+                                    <p>${review.comment || 'No comment'}</p>
+                                    <p><strong>Rating:</strong> ${getStars(review.rating)}</p>
+                                </div>
+                            `).join('')
+                            : '<p>No reviews yet.</p>';
 
                         document.getElementById('place-details').innerHTML = `
-                            <h1>${place.description}</h1>
+                            <h1>${place.description || 'No description'}</h1>
                             <section class="place-details">
                                 <div class="place-info">
-                                    <p><strong>Host:</strong> ${place.host_name}</p>
-                                    <p><strong>Price per night:</strong> $${place.price_per_night}</p>
-                                    <p><strong>Location:</strong> ${place.city_name}, ${place.country_name}</p>
-                                    <p><strong>Description:</strong> ${place.description}</p>
-                                    <p><strong>Amenities:</strong> ${place.amenities}</p>
+                                    <p><strong>Host:</strong> ${place.host_name || 'Unknown'}</p>
+                                    <p><strong>Price per night:</strong> $${place.price_per_night || 'N/A'}</p>
+                                    <p><strong>Location:</strong> ${place.city_name || 'Unknown'}, ${place.country_name || 'Unknown'}</p>
+                                    <p><strong>Description:</strong> ${place.description || 'No description'}</p>
+                                    <p><strong>Amenities:</strong> ${place.amenities || 'None'}</p>
                                 </div>
                                 <section class="reviews">
                                     <h2>Reviews</h2>
@@ -79,7 +81,7 @@
                             </section>
                         `;
 
-                        // Ajouter la fonctionnalité pour envoyer une revue
+                        // Add functionality to submit a review
                         if (getCookie('token')) {
                             document.getElementById('review-form').addEventListener('submit', (event) => {
                                 event.preventDefault();
@@ -92,15 +94,15 @@
                                         'Content-Type': 'application/json',
                                         'Authorization': `Bearer ${getCookie('token')}`
                                     },
-                                    body: JSON.stringify({ review: reviewText, rating: ratingValue })
+                                    body: JSON.stringify({ comment: reviewText, rating: parseInt(ratingValue, 10) })
                                 })
                                 .then(response => response.json())
                                 .then(newReview => {
-                                    // Ajouter la nouvelle revue directement dans le DOM
+                                    // Add the new review directly to the DOM
                                     const newReviewHtml = `
                                         <div class="review-card">
-                                            <p><strong>${newReview.user_name}:</strong></p>
-                                            <p>${newReview.comment}</p>
+                                            <p><strong>${newReview.user_name || 'Anonymous'}:</strong></p>
+                                            <p>${newReview.comment || 'Anonymous'}</p>
                                             <p><strong>Rating:</strong> ${getStars(newReview.rating)}</p>
                                         </div>
                                     `;
@@ -109,7 +111,7 @@
                                         reviewsSection.innerHTML = `
                                             <h2>Reviews</h2>
                                             ${newReviewHtml}
-                                            ${reviewsSection.innerHTML} <!-- Conserver les revues existantes -->
+                                            ${reviewsSection.innerHTML} <!-- Keep existing reviews -->
                                         `;
                                     }
                                     document.getElementById('review-form').reset();
@@ -139,6 +141,7 @@
             }
 
             function getStars(rating) {
+                if (!rating) return 'No rating';
                 const fullStar = '★';
                 const emptyStar = '☆';
                 let stars = '';
