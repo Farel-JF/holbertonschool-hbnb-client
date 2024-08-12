@@ -31,6 +31,7 @@ async function fetchPlaces(token) {
         });
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
+        console.log('Fetched places:', data);
         displayPlaces(data);
     } catch (error) {
         console.error('Error fetching places:', error);
@@ -45,9 +46,9 @@ function displayPlaces(places) {
         const placeCard = document.createElement('div');
         placeCard.className = 'place-card';
         placeCard.innerHTML = `
-            <h3>${place.name}</h3>
-            <p>Price per night: $${place.price}</p>
-            <p>Location: ${place.location}</p>
+            <h3>${place.city_name}</h3>
+            <p>Price per night: $${place.price_per_night}</p>
+            <p>Description: ${place.description}</p>
             <button class="details-button" data-place-id="${place.id}">View Details</button>
         `;
         placesList.appendChild(placeCard);
@@ -60,3 +61,5 @@ function displayPlaces(places) {
         });
     });
 }
+
+
